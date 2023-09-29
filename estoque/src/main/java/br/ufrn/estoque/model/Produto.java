@@ -1,20 +1,17 @@
 package br.ufrn.estoque.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import lombok.Data;
 import lombok.Getter;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "produtos")
 @Data
-@Getter
+@Document(collection = "produtos")
 public class Produto {
     @Id
-    String codBarras;
-    Integer quantidade;
+    private String codBarras;
+    private Integer quantidade;
 
     @Data
     public static class DtoRequest{

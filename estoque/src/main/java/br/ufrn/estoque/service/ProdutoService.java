@@ -6,7 +6,6 @@ import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProdutoService {
@@ -24,35 +23,28 @@ public class ProdutoService {
     }
 
     public void deleteById(String codBarras){
-        if(encontrou(codBarras))
+        if(this.repository.findById(codBarras).isPresent())
             this.repository.deleteById(codBarras);
-        else
-            throw new EntityNotFoundException();
+
+        throw new EntityNotFoundException();
     }
 
     public void deleteAll(){
         this.repository.deleteAll();
     }
 
-    public List<Produto> findAll(){
-        return this.repository.findAll();
+    public List<Produto.DtoResponse> findAll(){
+        return this.repository.findAll().stream().map(
+            produto -> {
+                return Produto.DtoResponse.convertToDto(produto, this.mapper);
+            }
+        ).toList();
     }
 
-    public Produto findById(String codBarras){
-        var produto = this.repository.findById(codBarras);
-        if(produto.isPresent())
-            return produto.get();
+    public Produto.DtoResponse findById(String codBarras){
+        if(this.repository.findById(codBarras).isPresent())
+            return Produto.DtoResponse.convertToDto(this.repository.findById(codBarras).get(), this.mapper);
+
         throw new EntityNotFoundException();
     }
-
-    public boolean encontrou(String codBarras){
-        Optional<Produto> produto = Optional.ofNullable(findById(codBarras));
-        return produto.isPresent();
-    }
-
-    /*public void update(Produto produto){
-        if (encontrou(produto.getId())){
-
-        }
-    }*/
 }

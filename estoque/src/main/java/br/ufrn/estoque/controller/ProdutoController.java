@@ -3,7 +3,6 @@ package br.ufrn.estoque.controller;
 import br.ufrn.estoque.model.Produto;
 import br.ufrn.estoque.service.ProdutoService;
 import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,23 +20,12 @@ public class ProdutoController {
 
     @GetMapping
     public List<Produto.DtoResponse> listar(){
-        List<Produto.DtoResponse> response = this.service.findAll().stream().map(
-                elemento -> {
-                    System.out.printf(elemento.toString());
-                    return Produto.DtoResponse.convertToDto(elemento, this.mapper);
-                }
-        ).toList();
-
-        return response;
+        return this.service.findAll();
     }
 
     @GetMapping("{codBarras}")
     public Produto.DtoResponse listarPorId(@PathVariable String codBarras){
-        var produto = Produto.DtoResponse.convertToDto(
-                this.service.findById(codBarras),
-                this.mapper
-        );
-        return produto;
+        return this.service.findById(codBarras);
     }
 
     @PostMapping

@@ -1,25 +1,24 @@
 package br.ufrn.cliente.service;
 
-import br.ufrn.cliente.dto.ClienteDto;
 import br.ufrn.cliente.model.Cliente;
 import br.ufrn.cliente.repository.ClienteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
 public class ClienteService {
+    ClienteRepository repository;
+    ModelMapper mapper;
 
-    @Autowired
-    private ClienteRepository repository;
+    public ClienteService(ClienteRepository repository, ModelMapper mapper){
+        this.repository = repository;
+        this.mapper = mapper;
+    }
 
-    @Autowired
-    private ModelMapper modelMapper;
-
-    public void save(Cliente cliente){
+    public void save(Cliente.DtoRequest clienteDto){
+        var cliente = Cliente.DtoRequest.convertToEntity(clienteDto, this.mapper);
         this.repository.save(cliente);
     }
 
@@ -27,13 +26,14 @@ public class ClienteService {
         return this.repository.findAll();
     }
 
-    public void deleteById(String cpf){
-        this.repository.deleteById(cpf);
+    public void deleteById(String id){
+        this.repository.deleteById(id);
     }
 
-    public ClienteDto getCliente(String cpf) {
-        Cliente cliente = repository.findById(cpf).orElseThrow(() -> new EntityNotFoundException());
+    public Cliente findById(String cpf) {
+        if(this.repository.findById(cpf).isPresent())
+            return this.repository.findById(cpf).get();
 
-        return modelMapper.map(cliente, ClienteDto.class);
+        throw new EntityNotFoundException();
     }
 }
