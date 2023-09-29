@@ -1,6 +1,17 @@
 spring:
     application:
         name: venda
+    datasource:
+        url: jdbc:postgresql://localhost:5432/venda
+        username: postgres
+        password: 123
+    jpa:
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+        hibernate:
+            ddl-auto: create-drop
+        generate-ddl: true
 server:
     port: 8083
 eureka:
