@@ -20,29 +20,21 @@ public class VendaService {
     VendaRepository repository;
 
     @Autowired
-    public VendaService(RestTemplate restTemplate) {
+    public VendaService(RestTemplate restTemplate, VendaRepository repository) {
         this.restTemplate = restTemplate;
-    }
-
-    public Venda criarVenda(String codBarras, String cpf, int quantidade){
-        String estoqueUrl = "http://localhost:8761/estoque" + codBarras;
-        Produto produto = restTemplate.getForObject(estoqueUrl, Produto.class);
-
-        String clienteUrl = "http://localhost:8761/cliente" + cpf;
-        Cliente cliente = restTemplate.getForObject(clienteUrl, Cliente.class);
-
-        Venda venda = new Venda();
-        venda.setCodBarras(codBarras);
-        venda.setCpf(cpf);
-        venda.setQuantidade(quantidade);
-
-        repository.save(venda);
-
-        return venda;
+        this.repository = repository;
     }
 
     public void save(Venda venda){
-        this.repository.save(venda);
+        String estoqueUrl = "http://localhost:8081/estoque/" + venda.getCodBarras();
+        String clienteUrl = "http://localhost:8082/cliente/" + venda.getCpf();
+
+        Optional<Produto> produto = Optional.ofNullable(restTemplate.getForObject(estoqueUrl, Produto.class));
+        Optional<Cliente> cliente = Optional.ofNullable(restTemplate.getForObject(clienteUrl, Cliente.class));
+
+        if(produto.isPresent() && cliente.isPresent())
+            repository.save(venda);
+        throw new EntityNotFoundException();
     }
 
     public Venda findById(String id){

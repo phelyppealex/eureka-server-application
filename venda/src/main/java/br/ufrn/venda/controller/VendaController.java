@@ -12,22 +12,17 @@ import java.util.List;
 public class VendaController {
 
     VendaService service;
-    @Autowired
 
     public VendaController(VendaService service) {
         this.service = service;
     }
 
-    @PostMapping("/criar")
-    public Venda criarVenda(@RequestBody Venda request) {
-        String codBarras = request.getCodBarras();
-        String cpf = request.getCpf();
-        int quantidade = request.getQuantidade();
-
-        return service.criarVenda(codBarras, cpf, quantidade);
+    @PostMapping("")
+    public void criarVenda(@RequestBody Venda venda) {
+        service.save(venda);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     public Venda getVendaById(@PathVariable String id) {
         return service.findById(id);
     }

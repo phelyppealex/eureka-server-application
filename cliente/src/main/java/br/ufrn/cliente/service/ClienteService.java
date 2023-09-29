@@ -27,12 +27,12 @@ public class ClienteService {
         return this.repository.findAll();
     }
 
-    public void deleteById(Long id){
-        this.repository.deleteById(id);
+    public void deleteById(String cpf){
+        this.repository.deleteById(cpf);
     }
 
-    public ClienteDto getCliente(Long id) {
-        Cliente cliente = repository.findById(id).orElseThrow(() -> new EntityNotFoundException());
+    public ClienteDto getCliente(String cpf) {
+        Cliente cliente = repository.findById(cpf).orElseThrow(() -> new EntityNotFoundException());
 
         return modelMapper.map(cliente, ClienteDto.class);
     }

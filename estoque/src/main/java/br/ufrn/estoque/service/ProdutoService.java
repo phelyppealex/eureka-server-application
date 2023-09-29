@@ -23,9 +23,9 @@ public class ProdutoService {
         this.repository.save(produto);
     }
 
-    public void deleteById(String id){
-        if(encontrou(id))
-            this.repository.deleteById(id);
+    public void deleteById(String codBarras){
+        if(encontrou(codBarras))
+            this.repository.deleteById(codBarras);
         else
             throw new EntityNotFoundException();
     }
@@ -38,15 +38,15 @@ public class ProdutoService {
         return this.repository.findAll();
     }
 
-    public Produto findById(String id){
-        var produto = this.repository.findById(id);
+    public Produto findById(String codBarras){
+        var produto = this.repository.findById(codBarras);
         if(produto.isPresent())
             return produto.get();
         throw new EntityNotFoundException();
     }
 
-    public boolean encontrou(String id){
-        Optional<Produto> produto = Optional.ofNullable(findById(id));
+    public boolean encontrou(String codBarras){
+        Optional<Produto> produto = Optional.ofNullable(findById(codBarras));
         return produto.isPresent();
     }
 

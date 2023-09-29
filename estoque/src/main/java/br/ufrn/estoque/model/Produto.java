@@ -13,8 +13,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 public class Produto {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
     String codBarras;
     Integer quantidade;
 
@@ -30,7 +28,6 @@ public class Produto {
 
     @Data
     public static class DtoResponse{
-        String id;
         String codBarras;
         Integer quantidade;
 

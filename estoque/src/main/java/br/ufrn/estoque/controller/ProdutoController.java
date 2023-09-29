@@ -31,10 +31,10 @@ public class ProdutoController {
         return response;
     }
 
-    @GetMapping("{id}")
-    public Produto.DtoResponse listarPorId(@PathVariable String id){
+    @GetMapping("{codBarras}")
+    public Produto.DtoResponse listarPorId(@PathVariable String codBarras){
         var produto = Produto.DtoResponse.convertToDto(
-                this.service.findById(id),
+                this.service.findById(codBarras),
                 this.mapper
         );
         return produto;
@@ -45,9 +45,9 @@ public class ProdutoController {
         service.save(produto);
     }
 
-    @DeleteMapping("{id}")
-    public void deletar(@PathVariable String id){
-        this.service.deleteById(id);
+    @DeleteMapping("{codBarras}")
+    public void deletar(@PathVariable String codBarras){
+        this.service.deleteById(codBarras);
     }
 
     @DeleteMapping

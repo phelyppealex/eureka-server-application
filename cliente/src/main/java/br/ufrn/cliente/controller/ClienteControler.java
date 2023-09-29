@@ -28,13 +28,13 @@ public class ClienteControler {
         return this.service.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ClienteDto detalhar(@PathVariable @NotNull Long id) {
-        return service.getCliente(id);
+    @GetMapping("{cpf}")
+    public ClienteDto detalhar(@PathVariable @NotNull String cpf) {
+        return service.getCliente(cpf);
     }
 
-    @DeleteMapping("{id}")
-    public void deletar(@PathVariable Long id){
-        this.service.deleteById(id);
+    @DeleteMapping("{cpf}")
+    public void deletar(@PathVariable String cpf){
+        this.service.deleteById(cpf);
     }
 }
