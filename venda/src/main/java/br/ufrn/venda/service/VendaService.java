@@ -3,10 +3,13 @@ package br.ufrn.venda.service;
 import br.ufrn.venda.model.RequestResponse;
 import br.ufrn.venda.model.Venda;
 import br.ufrn.venda.repository.VendaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 public class VendaService {
@@ -25,7 +28,7 @@ public class VendaService {
 
         webClientBuilder.build()
                 .get()
-                .uri("http://CLIENTE/cliente")
+                .uri("http://CLIENTE/cliente/{id}", venda.getCpf())
                 .retrieve()
                 .onStatus(
                         HttpStatusCode::is2xxSuccessful,
@@ -39,7 +42,7 @@ public class VendaService {
 
         webClientBuilder.build()
                 .get()
-                .uri("http://ESTOQUE/estoque")
+                .uri("http://ESTOQUE/estoque/{id}", venda.getCodBarras())
                 .retrieve()
                 .onStatus(
                         HttpStatusCode::is2xxSuccessful,
@@ -56,5 +59,15 @@ public class VendaService {
         }else{
             throw new Exception("Um dos parametros passados esta incorreto!!!");
         }
+    }
+
+    public List<Venda> findAll(){
+        return this.repository.findAll();
+    }
+
+    public Venda findById(String id){
+        if(this.repository.findById(id).isPresent())
+            return this.repository.findById(id).get();
+        throw new EntityNotFoundException();
     }
 }

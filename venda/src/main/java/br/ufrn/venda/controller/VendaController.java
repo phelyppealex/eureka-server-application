@@ -21,14 +21,14 @@ public class VendaController {
     public void salvar(@RequestBody Venda venda) throws Exception {
         this.service.save(venda);
     }
-    /*
+
     @GetMapping("{id}")
     public Venda getVendaById(@PathVariable String id) {
-        return service.findById(id);
+        return this.service.findById(id);
     }
 
     @GetMapping
     public List<Venda> listarVendas() {
-        return service.findAll();
-    }*/
+        return this.service.findAll();
+    }
 }
