@@ -18,7 +18,7 @@ public class VendaController {
     }
 
     @PostMapping
-    public void salvar(@RequestBody Venda venda) throws IOException, InterruptedException {
+    public void salvar(@RequestBody Venda venda) throws Exception {
         this.service.save(venda);
     }
     /*

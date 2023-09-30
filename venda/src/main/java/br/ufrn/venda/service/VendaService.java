@@ -1,43 +1,60 @@
 package br.ufrn.venda.service;
 
+import br.ufrn.venda.model.RequestResponse;
 import br.ufrn.venda.model.Venda;
 import br.ufrn.venda.repository.VendaRepository;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Service
 public class VendaService {
 
     VendaRepository repository;
+    private final WebClient.Builder webClientBuilder;
 
-    public VendaService(VendaRepository repository) {
+    public VendaService(VendaRepository repository, WebClient.Builder webClientBuilder) {
         this.repository = repository;
+        this.webClientBuilder = webClientBuilder;
     }
 
-    public void save(Venda venda) throws IOException, InterruptedException {
-        HttpClient clientCliente = HttpClient.newHttpClient();
-        HttpRequest requestCliente = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:53792/cliente"))
-                .build();
+    public Venda save(Venda venda) throws Exception {
+        RequestResponse clienteExiste = new RequestResponse();
+        RequestResponse estoqueExiste = new RequestResponse();
 
-        HttpResponse<String> statusRespostaCliente = clientCliente.send(requestCliente, HttpResponse.BodyHandlers.ofString());
+        webClientBuilder.build()
+                .get()
+                .uri("http://CLIENTE/cliente")
+                .retrieve()
+                .onStatus(
+                        HttpStatusCode::is2xxSuccessful,
+                        status -> {
+                            clienteExiste.setExiste(true);
+                            return Mono.empty();
+                        }
+                )
+                .bodyToMono(String.class)
+                .block();
 
-        HttpClient clientEstoque = HttpClient.newHttpClient();
-        HttpRequest requestEstoque = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:53811/estoque"))
-                .build();
+        webClientBuilder.build()
+                .get()
+                .uri("http://ESTOQUE/estoque")
+                .retrieve()
+                .onStatus(
+                        HttpStatusCode::is2xxSuccessful,
+                        status -> {
+                            estoqueExiste.setExiste(true);
+                            return Mono.empty();
+                        }
+                )
+                .bodyToMono(String.class)
+                .block();
 
-        HttpResponse<String> statusRespostaEstoque = clientEstoque.send(requestEstoque, HttpResponse.BodyHandlers.ofString());
-
-        var statusCliente = statusRespostaCliente.toString().split(" ");
-        var statusEstoque = statusRespostaEstoque.toString().split(" ");
-
-        if(statusCliente[2].equals("200") && statusEstoque[2].equals("200")){
-            this.repository.save(venda);
+        if(clienteExiste.getExiste() && estoqueExiste.getExiste()){
+            return this.repository.save(venda);
+        }else{
+            throw new Exception("Um dos parametros passados esta incorreto!!!");
         }
     }
 }
